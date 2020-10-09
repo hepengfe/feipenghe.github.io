@@ -6,9 +6,11 @@ author_profile: true
 redirect_from:
   - /resume
 ---
-[Available in PDF format](feipenghe.github.io/files/DS_CV.pdf)
 
 {% include base_path %}
+
+[Available in PDF format](feipenghe.github.io/files/DS_CV.pdf)
+
 
 Education
 ======
