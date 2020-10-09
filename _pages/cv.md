@@ -9,7 +9,7 @@ redirect_from:
 
 {% include base_path %}
 
-[Available in PDF format](http://feipenghe.github.io/DS_CV.pdf)
+[Available in PDF format](https://feipenghe.github.io/DS_CV.pdf)
 
 
 Education
