@@ -8,12 +8,12 @@ redirect_from:
   - /about.html
 ---
 
-Hi! I'm Pengfei(also go by Murphy), an undergraduate student major in [ACMS](https://acms.washington.edu) and minor in [Linguistics](https://acms.washington.edu). I am currently conducting researches at [H2Lab](https://h2lab.cs.washington.edu) and [CLMBR](https://clmbr.shane.st). 
+Hi! My name is Pengfei He(pronounced as "Ho"), and I also go by Murphy. I obtained my bachelor of science with honors degree major in [ACMS](https://acms.washington.edu) and minor in [Linguistics](https://acms.washington.edu). I am currently conducting researches. 
  
 
  
 
-My interests lie broadly in Natural Langauge Processing and Machine Learning. I am currently working on Emergent Communication, Scientific Relation Extraction for biologists and NLP4RL. I am also intereseted in commonsense reasoning, language and vision, text generation and Knowledge Base Construction. The listing is not exhaustive but I am still exploring and open to collaborate.
+My interests lie broadly in Natural Langauge Processing and Machine Learning. I am currently working on knowledge distillation and text generation.
 
 You can reach me via email or slack.
 
