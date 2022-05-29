@@ -14,7 +14,7 @@ redirect_from:
 
 Education
 ======
-* B.S. in University of Washington, 2021
+* B.S. with Honors in University of Washington, 2021
 
 Work experience
 ======
