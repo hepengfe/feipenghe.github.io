@@ -84,10 +84,10 @@ author:
   avatar           : "profile.png"
   bio              : "An undergraduate researcher at University of Washington. Interested in NLP and Machine Learning."
   location         : "Seattle, WA"
-  employer         :
+  employer         : "Petuum Inc."
   pubmed           : 
   googlescholar    : 
-  email            : "last_name + firs_name[:-1] + @uw.edu"
+  email            : "hepengfe@gmail.com"
   researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
   uri              :
   bitbucket        :
@@ -102,14 +102,14 @@ author:
   instagram        :
   impactstory      : #"https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
   lastfm           :
-  linkedin         :
+  linkedin         : "hepengfe"
   orcid            : 
   pinterest        :
   soundcloud       :
   stackoverflow    : # http://stackoverflow.com/users/123456/username
   steam            : 
   tumblr           :
-  twitter          : "replacethistwitterhandle"
+  twitter          : "hepengfe"
   vine             :
   weibo            :
   xing             :
