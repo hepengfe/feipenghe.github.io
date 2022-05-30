@@ -9,7 +9,7 @@ redirect_from:
 
 {% include base_path %}
 
-[Available in PDF format](https://feipenghe.github.io/DS_CV.pdf)
+[Available in PDF format](files/DS_CV.pdf)
 
 
 Education
@@ -21,6 +21,7 @@ Work experience
 * 8/2021-Now: Machine Learning Engineer (NLP)
   * Petuum Inc.
   * Supervisor: Hector Liu
+
 
 
 Skills
