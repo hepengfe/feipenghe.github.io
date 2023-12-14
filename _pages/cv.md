@@ -18,9 +18,8 @@ Education
 
 Work experience
 ======
-* 8/2021-Now: Machine Learning Engineer (NLP)
-  * Petuum Inc.
-  * Supervisor: Hector Liu
+* 8/2021-4/2023: Machine Learning Engineer (NLP)
+* 4/2023-Now: Part-Time Researcher (NLP)
 
 
 
@@ -28,8 +27,8 @@ Skills
 ======
 * Deep Learning
 * Natural Language Processing
-* Data Analytics
-* Algorithm
+* Artificial Intelligence
+* Containerization
 
 Publications
 ======
