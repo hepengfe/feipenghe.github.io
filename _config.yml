@@ -84,7 +84,7 @@ author:`
   avatar           : "profile.jpg"
   bio              : "NLP engineer. Interested in NLP and Machine Learning."
   location         : "Seattle, WA"
-  employer         : ""
+  # employer         : ""
   pubmed           : 
   googlescholar    : "https://scholar.google.com/citations?hl=en&user=TZXvQoEAAAAJ"
   email            : "hepengfe@gmail.com"
