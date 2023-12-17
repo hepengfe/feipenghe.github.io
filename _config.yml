@@ -79,9 +79,9 @@ analytics:
 
 
 # Site Author
-author:
+author:`
   name             : "Pengfei He"
-  avatar           : "profile.png"
+  avatar           : "profile.jpg"
   bio              : "NLP engineer. Interested in NLP and Machine Learning."
   location         : "Seattle, WA"
   employer         : ""
