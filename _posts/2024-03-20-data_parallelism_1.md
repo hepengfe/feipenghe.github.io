@@ -8,7 +8,7 @@ tags:
   - Training Framework
 ---
 
-Data Parallel (DP) is the foundational and most intuitive form of parallelism in model training. It replicates the model across multiple workers, with each worker processing a subset of the data batch. For more details, see [Author, Name (2024)].
+Data Parallel (DP) is the foundational and most intuitive form of parallelism in model training. It replicates the model across multiple workers, with each worker processing a subset of the data batch.
 
 Distributed Data Parallel (DDP) enhances DP by launching multiple processes, where each process handles a mini-batch of data independently. This approach not only speeds up training but also reduces communication overhead through efficient algorithms like ring-reduce.
 
