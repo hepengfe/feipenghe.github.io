@@ -16,12 +16,12 @@ Regarding research, I am also a part-time NLP researcher at UW NLP labs. My rese
 * Instruction Tuning ([technical report](https://arxiv.org/abs/2411.16775))
 * Parameter Efficient Fine Tuning in Efficient AI ([technical report](https://arxiv.org/abs/2411.16775))
 * Reinforcement Learning with Human Feedback. ([RAINIER](https://arxiv.org/abs/2210.03078))
-* Bring NLP algorithm to Biological Language Processing, particularly protein design. ([views on Protein Design](), still exploring projects.)
+* Bring NLP algorithm to Biological Language Processing, particularly protein design. ([views on Protein Design](), still exploring potential roles/projects.)
 
 
 ### System
-* High Performance Training in a Distributed Environment. ([parallelism techniques](https://hepengfei.ml/posts/2024-03-20-training_with_parallelism_1/), [data parallelism](https://hepengfei.ml/posts/2024-03-20-data_parallelism/), [pipeline Parallelism](), [GPU Communication]())
-* [Building](https://hepengfei.ml/posts/2021-10-blog-post-4/), Testing and Maintaining Home Cluster for SOTA Hardware Performance.
+* High Performance Training in a Distributed Environment. ([parallelism techniques](https://hepengfei.ml/posts/2024-03-20-training_with_parallelism_1/), [data parallelism](https://hepengfei.ml/posts/2024-03-20-data_parallelism/), [pipeline parallelism](), [GPU communication]())
+* [Building](https://hepengfei.ml/posts/2021-10-blog-post-4/), Testing,  Maintaining and Serving Home Cluster with SOTA Hardware Performance.
 
 ### Application
 * Business Application of AI Agent. (Founded [AdaBit AI](https://adabit.ai), actively developing.)
