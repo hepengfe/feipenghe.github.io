@@ -6,54 +6,54 @@ tags:
   - Machine Learning
   - Deep Learning
   - Training Framework
+  - Data Parallelism
 ---
 
 # Data Parallelism Overview
-Data Parallel (DP) is the foundational and most intuitive form of parallelism in model training. It replicates the model across multiple workers, with each worker processing a subset of the data batch.
+Here I am trying to illustrate all DP techniques chronically with reasoning for each improvement.
 
-Distributed Data Parallel (DDP) enhances DP by launching multiple processes, where each process handles a mini-batch of data independently. This approach not only speeds up training but also reduces communication overhead through efficient algorithms like ring-reduce.
+1. Data Parallel (DP) is the foundational and most intuitive form of parallelism in model training. It replicates the model across multiple workers, with each worker processing a subset of the data batch.
 
-**Parameter Server Architecture**: Traditionally, even though data (and intermediate results, like logits) are distributed, the model itself remains replicated across GPUs. The challenge then becomes managing the model and its associated data efficiently.
+   * Parameter Server(PS) Architecture: the architecture DP achieves multiple workers compute and synchronize gradients is call parameter server. In practice, if you training model with DP on two gpus but they occupy uneven amount of memories. The reason is that one of two GPUs (typically the first GPU) acts as a parameter server stores and updates optimizer states. 
+   * During gradient communication, PS is responsible for `push` and `pull` gradients at the same time for all workers as shown on the right graph. Workers contribute to the process passively.
 
-**Optimization Techniques**:
-1. **Optimizer States**: DeepSpeed Zero optimizes this by only gathering optimizer states during the backward pass, which are not needed during the forward pass.
-2. **Gradients**: The second stage involves partitioning gradients and optimizing communication, allowing each partition to update its corresponding optimizer states locally.
-3. **Model Weights**: The third stage partitions model weights, which are used in the forward pass, requiring additional communications (e.g., all-gather) during training.
+![DP](../images/blogs/dp.png)
+However, as the number of workers grow, the instance communication volume upon push and pull gradients incur a sudden **communication overhead** which becomes a bottleneck for training speed.
 
-FSDP (Fully Sharded Data Parallel) builds on the principles of Zero's third stage but with further optimizations that enhance performance, making it suitable for training large language models (LLMs) more efficiently.
+2. Distributed Data Parallel (DDP) enhances DP by launching multiple processes, where each process handles a mini-batch of data but maintain optimizer states independently. This approach not only speeds up training but also reduces peak communication overhead through efficient all-reduce communication operation.
+   * No PS. In other words, all processes on all GPUs participate gradients communication actively.
+   * During all-reduce communication, each GPU requires `send` and `rev` operation in a streaming manner, and this is enabled by multi-process. 
 
-Look out for the second blog in this series, where we delve deeper into DeepSpeed and FSDP's practical applications.
+![DDP](../images/blogs/ddp.png)
 
-
-
-# Deep Dive on DeepSpeed and FSDP
-The following content assumed you have understanding about GPU communication operations.
-
-## DeepSpeed stages and GPU communication volumes
-* stage1: $O(3\theta)$ optimizer weights.
-* stage2: $O(2\theta)$ optimizer weights + gradients.
-* stage3: $O(3\theta)$ optimizer weights + gradients + model weights.
-
-## FSDP unit
-The smallest partition and communication unit in FSDP is turned into FlatParameter.
-
-## FlatParameter
-Imagine you want to flatten a MLP, `y=w2(act(w1(x)))`. `w1` has the dimension `h x 4h` and `w2` has the dimension `4h x h`. After flattening, the FlatParameter has the shape, `1 x (h x 4h +4h x h)`. We let FSDP unit to be the MLP, and we want to convert it into FlatParameter. The reason for FlatParameter is it's easier to split based on the number of devices.
-
-To make it more intuitive, let `h=1`. We have the following
-
-[Graph]
+Despite the communication improvement from DP to DDP, model and optimizer states remains replicated across GPUs. On the one hand, it enables simple and efficient optimization. On the other hand, such a replication lead to a lot of **redundant memory usage**. Can we optimize the redundancy? Deepspeed Zero is proposed to solve such a problem.
 
 
-Why FlatParameter?
-* spatial locality
-* communication: brandwidth utilization, memory buffer?
-* simplified API for operation:
-* simplified representation: less metadata.
-* input-agnostic:
-* device-agnostic:
 
-## Sharding
+
+
+1. Deepspeed Zero: DeepSpeed has three stages, and it optimize the redundancy incrementally from the first stage to the third stage.
+   1. **Optimizer States(OS)**: During DP forward pass, optimizer states are not needed because there is no gradient update. Can we partition the optimizer states during forward and gather and update it during backward? Zero stage1 handles this situation exactly -- with each GPUs hosts partial optimizer states, after all-reduce gradients, it all-gather optimizer states to sync weights. ![zero1](../images/blogs/deepspeed_zero1.png)
+   2. OS + **Gradients(G)**: If you think deeply, each partial optimizer states only requires partial average gradients. It means we can also partition gradients across GPUs and only reduce-scatter gradients such that each partial gradients correspond to each partial optimizer state it corresponds to. Therefore, it not only optimizes memory usage (on gradients) but also communication from $3\theta$ to $2\theta$. ![zero2](../images/blogs/deepspeed_zero2.png)
+   3. OS + G + **Model Weights**: So far we have optimized memory usage of tensors related to backward, how about tensors used for forward pass, the model parameter? In DP forward pass, each worker do forward computation independently with full model parameters, and it sounds tricky that how it can be optimized. Actually, the idea behind model weights optimization is "dispose it after usage". Suppose we have three model layers and two GPUs. $W_{xy}$ denotes xth layer's yth partition. For example, $W_{10}$ means the second layer weight on the first GPU. Suppose we forward pass the second layer on first GPU, we need to all-gather $W_{10}$ on local gpu and $W_{11}$ on the second GPU to materialize the second layer $W_{1}$. Afterwards, it discards $W_{1}$ and repeat the layer materialization step described. Therefore, the peak memory usage on each GPU (for model parameter only) is only the one layer weight in this example. ![zero3](../images/blogs/deepspeed_zero3.png)
+
+In practice, deepspeed zero3 could be significantly slower than DDP as the model is very large. The root cause is that the granularity of model weights sharding is still not small enough to fully utilize compute-communication overlapping.
+> The FSDP algorithm is motivated by the
+ZeroRedundancyOptimizer [27, 28] technique from DeepSpeed but
+with a revised design and implementation that is aligned with the
+other components of PyTorch. FSDP breaks down a model instance
+into smaller units and then flattens and shards all of the parameters
+within each unit. The sharded parameters are communicated and
+recovered on-demand before computations, and then they are immediately discarded afterwards. This approach ensures that FSDP
+only needs to materialize parameters from one unit at a time, which
+significantly reduces peak memory consumption
+
+On the one hand, it's more integrated with PyTorch ecosystem. On the other hand, FSDP unit is smaller than its equivalent "partition unit" in Zero3 which makes model weight fetching more streamlined and efficient w.r.t computation.
+
+
+4. FSDP (Fully Sharded Data Parallel) builds on the principle of Zero's third stage but with further optimizations that enhance performance, making it suitable for training large language models (LLMs) more efficiently. It proposes FSDP unit which is the smallest unit in FSDP that is turned into `FlatParameter` before sharding and materialized upon computation.
+
+
 
 
 
@@ -71,18 +71,3 @@ There could be some common misunderstanding that FSDP is similar to Tensor Paral
 Similar to Q1, they differ from these three perspectives. The second point worth mentioning, MP partitions model weights inter-layer, and TP partitions model weights intra-layer.
 
 
-
-#### Q3: diff between zero3 and fsdp despite their are very similar?
-> The FSDP algorithm is motivated by the
-ZeroRedundancyOptimizer [27, 28] technique from DeepSpeed but
-with a revised design and implementation that is aligned with the
-other components of PyTorch. FSDP breaks down a model instance
-into smaller units and then flattens and shards all of the parameters
-within each unit. The sharded parameters are communicated and
-recovered on-demand before computations, and then they are immediately discarded afterwards. This approach ensures that FSDP
-only needs to materialize parameters from one unit at a time, which
-significantly reduces peak memory consumption
-
-On the one hand, it's more integrated with PyTorch ecosystem. On the other hand, FSDP unit is much smaller than Zero3 which makes model weight fetching more streamlined and efficient w.r.t computation.
-<!-- #### Q4: async gradient update + traffic aware routing 
-* does backward contain a sequence of gradient computation O(2\theta) but forward only involves one-time logits aggregation? -->
