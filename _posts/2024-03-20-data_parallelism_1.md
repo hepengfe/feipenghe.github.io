@@ -12,7 +12,7 @@ tags:
 # Data Parallelism Overview
 Here I am trying to illustrate all DP techniques chronically with reasoning for each improvement.
 
-1. Data Parallel (DP) is the foundational and most intuitive form of parallelism in model training. It replicates the model across multiple workers, with each worker processing a subset of the data batch.
+1. Data Parallel (DP) is the foundational and most intuitive form of parallelism in model training. It partitions input data across batch dimension and replicates the model across multiple workers, and each worker processes a subset of the data batch.
 
    * Parameter Server(PS) Architecture: DP achieves multiple workers computing and synchronizing gradients by parameter server. In practice, if you training model with DP on two gpus but they occupy uneven amount of memories. The reason is that one of two GPUs (typically the first GPU) acts as a parameter server stores and updates optimizer states. See the left graph below.
    * During gradient communication, each worker (on one thread) is responsible for `push` and `pull` gradients at the same time to/from PS as shown on the right graph. Workers(single process multiple threads) contribute to the process actively.
